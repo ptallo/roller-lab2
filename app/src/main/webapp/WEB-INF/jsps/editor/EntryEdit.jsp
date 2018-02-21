@@ -141,6 +141,15 @@
                 <s:textfield id="tagAutoComplete" cssClass="entryEditTags" name="bean.tagsAsString" size="70" maxlength="255" tabindex="3" style="width:30%"/>
             </td>
         </tr>
+        
+        <tr>
+        	<td class="entryEditFormLabel">
+        		<label for="title"><s:text name="weblogEdit.genTags"/></label>
+        	</td>
+        	<td>
+        		<s:text name="weblogEdit.genTag1"/> <s:text name="weblogEdit.genTag2"/> <s:text name="weblogEdit.genTag3"/>
+        	</td>
+        </tr>
 
         <s:if test="actionWeblog.enableMultiLang">
                 <tr>
