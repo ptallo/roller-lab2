@@ -145,6 +145,186 @@
         <tr>
         	<td class="entryEditFormLabel">
         		<label for="title"><s:text name="weblogEdit.genTags"/></label>
+				<style>
+			        .popup {
+			            position: relative;
+			            display: inline-block;
+			            cursor: pointer;
+			            -webkit-user-select: none;
+			            -moz-user-select: none;
+			            -ms-user-select: none;
+			            user-select: none;
+			        }
+			
+			        .popup .popupCanvas {
+			            visibility: hidden;
+			            width: 300px;
+			            height: 500px;
+			            background-color: #555;
+			            color: #fff;
+			            text-align: center;
+			            border-radius: 6px;
+			            padding: 8px 0;
+			            position: absolute;
+			            z-index: 1;
+			            bottom: 125%;
+			            left: 50%;
+			            top: 50%;
+			            margin-left: -80px;
+			        } 
+			
+			        .popup .show {
+			            visibility: visible;
+			            -webkit-animation: fadeIn 1s;
+			            animation: fadeIn 1s;
+			        }
+			
+			        @-webkit-keyframes fadeIn {
+			            from {opacity: 0;}
+			            to {opacity: 1;}
+			        }
+			
+			        @keyframes fadeIn {
+			            from {opacity: 0;}
+			            to {opacity:1 ;}
+			        }
+			    </style>
+				    
+				<div class="popup" onclick="myFunction()">Click me to see how tags were generated!
+				    <span class="popupCanvas" id="myPopup">
+				        <canvas id="tagCanvas"></canvas>
+				        <legend for="tagCanvas"></legend>
+				    </span>
+				</div>
+				
+				<script>
+				    function myFunction() {
+				        var popup = document.getElementById("myPopup");
+				        popup.classList.toggle("show");
+				    }
+				
+				    var tagCanvas = document.getElementById("tagCanvas");
+				    tagCanvas.width = 300;
+				    tagCanvas.height = 300;
+				
+				    var ctx = tagCanvas.getContext("2d");
+				
+				    var exampleTags = {
+				        "Apples": 10,
+				        "Pies": 14,
+				        "Pans": 2,
+				        "Oven": 12
+				    };
+				
+				    function drawLine(ctx, startX, startY, endX, endY,color){
+				        ctx.save();
+				        ctx.strokeStyle = color;
+				        ctx.beginPath();
+				        ctx.moveTo(startX,startY);
+				        ctx.lineTo(endX,endY);
+				        ctx.stroke();
+				        ctx.restore();
+				    }
+				
+				    function drawBar(ctx, upperLeftCornerX, upperLeftCornerY, width, height,color){
+				        ctx.save();
+				        ctx.fillStyle=color;
+				        ctx.fillRect(upperLeftCornerX,upperLeftCornerY,width,height);
+				        ctx.restore();
+				    }
+				
+				    var Barchart = function(options){
+				        this.options = options;
+				        this.canvas = options.canvas;
+				        this.ctx = this.canvas.getContext("2d");
+				        this.colors = options.colors;
+				
+				        this.draw = function(){
+				            var maxValue = 0;
+				            for (var categ in this.options.data){
+				                maxValue = Math.max(maxValue,this.options.data[categ]);
+				            }
+				            var canvasActualHeight = this.canvas.height - this.options.padding * 2;
+				            var canvasActualWidth = this.canvas.width - this.options.padding * 2;
+				
+				            var gridValue = 0;
+				            while (gridValue <= maxValue){
+				                var gridY = canvasActualHeight * (1 - gridValue/maxValue) + this.options.padding;
+				                drawLine(
+				                    this.ctx,
+				                    0,
+				                    gridY,
+				                    this.canvas.width,
+				                    gridY,
+				                    this.options.gridColor
+				                );
+				
+				                this.ctx.save();
+				                this.ctx.fillStyle = this.options.gridColor;
+				                this.ctx.font = "bold 10px Arial";
+				                this.ctx.fillText(gridValue, 10,gridY - 2);
+				                this.ctx.restore();
+				
+				                gridValue+=this.options.gridScale;
+				            }
+				
+				            var barIndex = 0;
+				            var numberOfBars = Object.keys(this.options.data).length;
+				            var barSize = (canvasActualWidth)/numberOfBars;
+				
+				            for (categ in this.options.data){
+				                var val = this.options.data[categ];
+				                var barHeight = Math.round( canvasActualHeight * val/maxValue) ;
+				                drawBar(
+				                    this.ctx,
+				                    this.options.padding + barIndex * barSize,
+				                    this.canvas.height - barHeight - this.options.padding,
+				                    barSize,
+				                    barHeight,
+				                    this.colors[barIndex%this.colors.length]
+				                );
+				
+				                barIndex++;
+				            }
+				            this.ctx.save();
+				            this.ctx.textBaseline="bottom";
+				            this.ctx.textAlign="center";
+				            this.ctx.fillStyle = "#000000";
+				            this.ctx.font = "bold 14px Arial";
+				            this.ctx.fillText(this.options.seriesName, this.canvas.width/2,this.canvas.height);
+				            this.ctx.restore();
+				
+				            barIndex = 0;
+				            var legend = document.querySelector("legend[for='tagCanvas']");
+				            var ul = document.createElement("ul");
+				            legend.append(ul);
+				            for (categ in this.options.data){
+				                var li = document.createElement("li");
+				                li.style.listStyle = "none";
+				                li.style.borderLeft = "20px solid "+this.colors[barIndex%this.colors.length];
+				                li.style.padding = "5px";
+				                li.textContent = categ;
+				                ul.append(li);
+				                barIndex++;
+				            }
+				
+				        }
+				    };
+				
+				    var myBarchart = new Barchart(
+				        {
+				            canvas:tagCanvas,
+				            seriesName:"tag data",
+				            padding:20,
+				            gridScale:5,
+				            gridColor:"#eeeeee",
+				            data:exampleTags,
+				            colors:["#a55ca5","#67b6c7", "#bccd7a","#eb9743"]
+				        }
+				    );
+				
+				    myBarchart.draw();
+				</script>
         	</td>
         	<td>
         		
