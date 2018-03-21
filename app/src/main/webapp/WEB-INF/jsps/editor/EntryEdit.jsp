@@ -147,7 +147,7 @@
         		<label for="title"><s:text name="weblogEdit.genTags"/></label>
         	</td>
         	<td>
-        		<s:text name="weblogEdit.genTag1"/> <s:text name="weblogEdit.genTag2"/> <s:text name="weblogEdit.genTag3"/>
+        		
         	</td>
         </tr>
 
