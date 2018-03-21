@@ -10,12 +10,18 @@ public class StrategyHandler {
 	StrategyHandler(Strategy strategy, ArrayList<WeblogEntry> entries){
 		this.strategy = strategy;
 		entryToTagMap = new HashMap<WeblogEntry, ArrayList<String>>();
-		for (int i = 0; i < entries.size(); i++){
-			if (i != entries.size() - 1){
-				addWeblogEntry(entries.get(i), false);
-			} else {
-				addWeblogEntry(entries.get(i), true);
-			}
+		for (WeblogEntry entry : entries){
+			addWeblogEntry(entry, false);
+		}
+		runWeblogStartup();
+	}
+	
+	public void runWeblogStartup(){
+		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
+		weblogEntries.addAll(entryToTagMap.keySet());
+		for (WeblogEntry entry : weblogEntries) {
+			ArrayList<String> tags = entryToTagMap.get(entry);
+			tags = runStrategy(weblogEntries, entry);
 		}
 	}
 	
