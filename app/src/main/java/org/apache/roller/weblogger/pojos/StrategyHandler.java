@@ -11,6 +11,10 @@ public final class StrategyHandler {
 		
 	}
 	
+	public static ArrayList<String> getRecommendedTags(WeblogEntry entry){
+		return entryToTagMap.get(entry);
+	}
+	
 	public static void initiateStrategyHandler(Strategy strategy, ArrayList<WeblogEntry> entries){
 		strategy1 = strategy;
 		entryToTagMap = new HashMap<WeblogEntry, ArrayList<String>>();

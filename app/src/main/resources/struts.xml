@@ -299,8 +299,7 @@
             </result>
         </action>
 
-        <action name="entryEdit!*" method="{1}"
-                class="org.apache.roller.weblogger.ui.struts2.editor.EntryEdit">
+        <action name="entryEdit!*" method="{1}" class="org.apache.roller.weblogger.ui.struts2.editor.EntryEdit">
             <param name="actionName">entryEdit</param>
             <param name="pageTitle">weblogEdit.title.editEntry</param>
             <result name="input" type="tiles">.EntryEdit</result>

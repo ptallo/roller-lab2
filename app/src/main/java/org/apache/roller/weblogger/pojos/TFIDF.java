@@ -26,7 +26,7 @@ public class TFIDF implements Strategy{
 		ratings.addAll(tfidfMap.values());
 				
 		ArrayList<String> tags = new ArrayList<>();
-		while(tags.size() < 3){
+		while(tags.size() < 3 && words.size() != 0){
 			tags.add(removeMax(words, ratings)); //gets the word with the highest rating
 		}
 		return tags;

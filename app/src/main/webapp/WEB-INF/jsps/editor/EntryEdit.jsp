@@ -16,7 +16,15 @@
   directory of this distribution.
 --%>
 <%@ include file="/WEB-INF/jsps/taglibs-struts2.jsp" %>
-<%@ page import="org.apache.roller.weblogger.pojos" %>
+
+<%@ page import="import java.util.ArrayList, 
+org.apache.roller.weblogger.business.jpa.JPAWeblogEntryManagerImpl, 
+org.apache.roller.weblogger.business.WeblogEntryManager, 
+org.apache.roller.weblogger.pojos.TFIDF,
+org.apache.roller.weblogger.pojos.WeblogEntrySearchCriteria,
+org.apache.roller.weblogger.pojos.StrategyHandler,
+org.apache.roller.weblogger.business.WebloggerFactory,
+org.apache.roller.weblogger.pojos.WeblogEntry" %>
 
 <link rel="stylesheet" media="all" href='<s:url value="/roller-ui/jquery-ui-1.11.0/jquery-ui.min.css"/>' />
 
@@ -51,11 +59,25 @@
     <s:hidden name="weblog" />
     <s:hidden name="bean.status" />
     <s:if test="actionName == 'entryEdit'">
-        <s:hidden name="bean.id" />
+        <s:hidden name="bean.id" />  <!-- this is the id of the current Weblog -->
     </s:if>
     <%
+    	WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
+    	WeblogEntrySearchCriteria criteria = new WeblogEntrySearchCriteria();
+    	criteria.setWeblog(weblog);
     	TFIDF strategy = new TFIDF();
-    	StrategyHandler.initiateStrategyHandler(strategy, );
+    	
+    	List<WeblogEntry> entries = wmgr.getWeblogEntries(criteria);
+    	ArrayList<WeblogEntry> aEntries = new ArrayList<WeblogEntry>();
+    	aEntries.addAll(entries);
+    	
+    	StrategyHandler.initiateStrategyHandler(strategy, aEntries);
+    	ArrayList<String> tagList = new ArrayList<String>();
+    	tagList = StrategyHandler.getRecommendedTags();
+    	
+    	String tag1 = tagList.get(0);
+    	String tag2 = tagList.get(1);
+    	String tag3 = tagList.get(2);
     %>
 
     <%-- ================================================================== --%>
@@ -150,6 +172,12 @@
         <tr>
         	<td class="entryEditFormLabel">
         		<label for="title"><s:text name="weblogEdit.genTags"/></label>
+        	</td>
+        	<td><%=tag1%></td>
+        	<td><%=tag2%></td>
+        	<td><%=tag3%></td>
+        	<td id="infographic">
+        		<!-- Popup Code -->
 				<style>
 			        .popup {
 			            position: relative;
@@ -202,7 +230,6 @@
 				    </span>
 				</div>
 				
-				<!-- This is our script to create the infographic -->
 				<script>
 				    function myFunction() {
 				        var popup = document.getElementById("myPopup");
@@ -332,13 +359,10 @@
 				    myBarchart.draw();
 				</script>
         	</td>
-        	<td>
-        		
-        	</td>
         </tr>
 
         <s:if test="actionWeblog.enableMultiLang">
-                <tr>
+                <tr> 
                     <td class="entryEditFormLabel">
                         <label for="locale"><s:text name="weblogEdit.locale" /></label>
                     </td>
