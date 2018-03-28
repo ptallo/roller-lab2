@@ -16,6 +16,7 @@
   directory of this distribution.
 --%>
 <%@ include file="/WEB-INF/jsps/taglibs-struts2.jsp" %>
+<%@ page import="org.apache.roller.weblogger.pojos" %>
 
 <link rel="stylesheet" media="all" href='<s:url value="/roller-ui/jquery-ui-1.11.0/jquery-ui.min.css"/>' />
 
@@ -52,6 +53,10 @@
     <s:if test="actionName == 'entryEdit'">
         <s:hidden name="bean.id" />
     </s:if>
+    <%
+    	TFIDF strategy = new TFIDF();
+    	StrategyHandler.initiateStrategyHandler(strategy, );
+    %>
 
     <%-- ================================================================== --%>
     <%-- Title, category, dates and other metadata --%>
@@ -197,6 +202,7 @@
 				    </span>
 				</div>
 				
+				<!-- This is our script to create the infographic -->
 				<script>
 				    function myFunction() {
 				        var popup = document.getElementById("myPopup");

@@ -3,12 +3,16 @@ package org.apache.roller.weblogger.pojos;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class StrategyHandler {
-	public HashMap<WeblogEntry, ArrayList<String>> entryToTagMap; 
-	private Strategy strategy;
+public final class StrategyHandler {
+	public static HashMap<WeblogEntry, ArrayList<String>> entryToTagMap; 
+	private static Strategy strategy1;
 	
-	StrategyHandler(Strategy strategy, ArrayList<WeblogEntry> entries){
-		this.strategy = strategy;
+	private StrategyHandler(){
+		
+	}
+	
+	public static void initiateStrategyHandler(Strategy strategy, ArrayList<WeblogEntry> entries){
+		strategy1 = strategy;
 		entryToTagMap = new HashMap<WeblogEntry, ArrayList<String>>();
 		for (WeblogEntry entry : entries){
 			addWeblogEntry(entry, false);
@@ -16,7 +20,7 @@ public class StrategyHandler {
 		runWeblogStartup();
 	}
 	
-	public void runWeblogStartup(){
+	public static void runWeblogStartup(){
 		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
 		weblogEntries.addAll(entryToTagMap.keySet());
 		for (WeblogEntry entry : weblogEntries) {
@@ -25,7 +29,7 @@ public class StrategyHandler {
 		}
 	}
 	
-	public void addWeblogEntry(WeblogEntry entry, Boolean runStrategy){
+	public static void addWeblogEntry(WeblogEntry entry, Boolean runStrategy){
 		//WeblogEntry entry is the entry that you wish to add
 		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
 		weblogEntries.addAll(entryToTagMap.keySet());
@@ -34,7 +38,7 @@ public class StrategyHandler {
 		}
 	}
 	
-	public void addComment(WeblogEntry entry){
+	public static void addComment(WeblogEntry entry){
 		//WeblogEntry entry should be the weblogEntry which the comment was added to
 		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
 		weblogEntries.addAll(entryToTagMap.keySet());
@@ -42,7 +46,7 @@ public class StrategyHandler {
 		recommendedTags = runStrategy(weblogEntries, entry);
 	}
 	
-	private ArrayList<String> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
-		return strategy.runStrategy(entryList, entry);
+	private static ArrayList<String> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
+		return strategy1.runStrategy(entryList, entry);
 	}
 }

@@ -7,12 +7,14 @@ import org.apache.roller.weblogger.pojos.Strategy;
 
 public class TFIDF implements Strategy{
 	
-	public HashMap<WeblogEntry, ArrayList<String>> wordsInEntryMap = new HashMap<WeblogEntry, ArrayList<String>>();
+	public TFIDF(){
+		
+	}
 
 	@Override
 	public ArrayList<String> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry) {
-		HashMap<String, Double> tfMap = calculateTF(entry);
-		HashMap<String, Double> idfMap = calculateIDF(entryList, entry);
+		HashMap<String, Double> tfMap = calculateTF(entry); //a map to each word to how many times that occurs
+		HashMap<String, Double> idfMap = calculateIDF(entryList, entry); //calculates the idf value for each word in the map
 		HashMap<String, Double> tfidfMap = new HashMap<String, Double>();
 		for (String word : tfMap.keySet()){
 			Double tfidf = tfMap.get(word) * idfMap.get(word);
@@ -25,7 +27,7 @@ public class TFIDF implements Strategy{
 				
 		ArrayList<String> tags = new ArrayList<>();
 		while(tags.size() < 3){
-			tags.add(removeMax(words, ratings));
+			tags.add(removeMax(words, ratings)); //gets the word with the highest rating
 		}
 		return tags;
 	}
@@ -54,6 +56,7 @@ public class TFIDF implements Strategy{
 	}
 	
 	public HashMap<String, Double> calculateIDF(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
+		HashMap<WeblogEntry, ArrayList<String>> wordsInEntryMap = new HashMap<WeblogEntry, ArrayList<String>>();
 		for (WeblogEntry entryInList : entryList){
 			wordsInEntryMap.put(entryInList, getWordsList(entryInList));
 		}
@@ -78,7 +81,7 @@ public class TFIDF implements Strategy{
 			idf = Math.log(entryList.size() / idf);
 			idfMap.put(word, idf);
 		}
-		return null;
+		return idfMap;
 	}
 	
 	private String getMetaString(WeblogEntry entry){
@@ -91,6 +94,7 @@ public class TFIDF implements Strategy{
 	}
 	
 	private ArrayList<String> getWordsList(WeblogEntry entry){
+		//returns list of all words in document
 		String metaString = getMetaString(entry);
 		String[] splitMetaString = metaString.split("\\s+");
 		ArrayList<String> wordsList = new ArrayList<>();
