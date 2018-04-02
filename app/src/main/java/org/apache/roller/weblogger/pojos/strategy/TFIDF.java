@@ -85,7 +85,7 @@ public class TFIDF implements Strategy{
 		return idfMap;
 	}
 	
-	private String getMetaString(WeblogEntry entry){
+	public String getMetaString(WeblogEntry entry){
 		String metaString = "";
 		metaString += entry.getText();
 		for (WeblogEntryComment comment : entry.getComments()){
@@ -94,7 +94,7 @@ public class TFIDF implements Strategy{
 		return metaString;
 	}
 	
-	private ArrayList<String> getWordsList(WeblogEntry entry){
+	public ArrayList<String> getWordsList(WeblogEntry entry){
 		//returns list of all words in document
 		String metaString = getMetaString(entry);
 		String[] splitMetaString = metaString.split("\\s+");
