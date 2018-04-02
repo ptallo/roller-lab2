@@ -26,7 +26,7 @@ public class Tf_Idf_Test extends TestCase {
     /**
      * All tests in this suite require a user and a weblog.
      */
-    public void TfIDF_Test() throws Exception {
+    public void Test_BlackBox() throws Exception {
         
         // setup weblogger
         TestUtils.setupWeblogger();
@@ -49,7 +49,13 @@ public class Tf_Idf_Test extends TestCase {
         testPage.setWeblog(TestUtils.getManagedWebsite(testWeblog));	
     		
         ExpectedTags = "Orange Monkey Eagle"
-        ActualTags = " "
+        ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
+        weblogEntries.addAll(entryToTagMap.keySet());
+        for (WeblogEntry entry : weblogEntries) {
+            ArrayList<String> tags = entryToTagMap.get(entry);
+            tags = runStrategy(weblogEntries, entry);
+        }
+        ActualTags = runStrategy(weblogEntries, testPage)
         assertEquals(ExpectedTags,ActualTags)
         
    	}
