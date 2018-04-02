@@ -1,13 +1,15 @@
-package org.apache.roller.weblogger.pojos;
+package org.apache.roller.weblogger.pojos.strategy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public final class StrategyHandler {
+import org.apache.roller.weblogger.pojos.WeblogEntry;
+
+public class StrategyHandler {
 	public static HashMap<WeblogEntry, ArrayList<String>> entryToTagMap; 
 	private static Strategy strategy1;
 	
-	private StrategyHandler(){
+	public StrategyHandler(){
 		
 	}
 	

@@ -1,9 +1,10 @@
-package org.apache.roller.weblogger.pojos;
+package org.apache.roller.weblogger.pojos.strategy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.roller.weblogger.pojos.Strategy;
+import org.apache.roller.weblogger.pojos.WeblogEntry;
+import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 
 public class TFIDF implements Strategy{
 	
