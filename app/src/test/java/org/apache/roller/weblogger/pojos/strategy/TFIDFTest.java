@@ -158,20 +158,15 @@ public class TFIDFTest {
 	}
 	
 	@Test
-	public void testWordNotFound() {
-
-	}
-	
-	@Test
-	public void testPrevWords() throws Exception {
-		
+	public void testWordNotFound() throws Exception {
+			
 		// Entry 1
 		
 		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
-        WeblogEntry entry1;
-
-        WeblogEntry testEntry1 = new WeblogEntry();
-        testEntry1.setTitle("entryTestEntry1");
+	    WeblogEntry entry1;
+	    WeblogEntry testEntry1 = new WeblogEntry();
+        
+	    testEntry1.setTitle("entryTestEntry1");
         testEntry1.setLink("testEntryLink1");
         testEntry1.setText("orange moneky eagle");
         testEntry1.setAnchor("testEntryAnchor1");
@@ -179,7 +174,6 @@ public class TFIDFTest {
         testEntry1.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
         testEntry1.setWebsite(testWeblog);
         testEntry1.setCreatorUserName(testUser.getUserName());
-
         WeblogCategory cat1 = testWeblog.getWeblogCategory("General");
         testEntry1.setCategory(cat1);
 
@@ -187,60 +181,22 @@ public class TFIDFTest {
         mgr1.saveWeblogEntry(testEntry1);
         String id1 = testEntry1.getId();
         TestUtils.endSession(true);
-
+        
         // make sure entry was created
         entry1 = mgr1.getWeblogEntry(id1);
         assertNotNull(entry1);
         assertEquals(testEntry1, entry1);
-        
-        // Entry 2
-		WeblogEntryManager mgr2 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
-        WeblogEntry entry2 = new WeblogEntry();
-        
-        WeblogEntry testEntry2 = new WeblogEntry();
-        testEntry2.setTitle("entryTestEntry2");
-        testEntry2.setLink("testEntryLink2");
-        testEntry2.setText("");
-        testEntry2.setAnchor("testEntryAnchor2");
-        testEntry2.setPubTime(new java.sql.Timestamp(new java.util.Date().getTime()));
-        testEntry2.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
-        testEntry2.setWebsite(testWeblog);
-        testEntry2.setCreatorUserName(testUser.getUserName());
-
-        WeblogCategory cat2 = testWeblog.getWeblogCategory("General");
-        testEntry2.setCategory(cat2);
-
-        // create a weblog entry
-        mgr2.saveWeblogEntry(testEntry2);
-        String id2 = testEntry2.getId();
-        TestUtils.endSession(true);
-        
-        // make sure entry was created
-        entry2 = mgr2.getWeblogEntry(id2);
-        assertNotNull(entry2);
-        assertEquals(testEntry2, entry2);
-
-        // Test TF with no words in entry
+       
+        // Test TF with first entry
         ArrayList<WeblogEntry> entryList = new ArrayList<WeblogEntry>();
         entryList.add(entry1);
-        entryList.add(entry2);
         TFIDF tester = new TFIDF();
-        ArrayList<String> strategyMap = tester.runStrategy(entryList, testEntry2);
-
-        //int idfVaue = toDo
-        assertNotNull(strategyMap);
-        double idfActualVaue = strategyMap.get("eagle");
-        double bs = 2;
-        assertTrue(idfActualVaue == bs);
-
+        
         // delete a weblog entry
-        mgr2.removeWeblogEntry(entry2);
-        TestUtils.endSession(true);
         mgr1.removeWeblogEntry(entry1);
         TestUtils.endSession(true);
-   
 	}
-	
+		
 	@Test
 	public void testMetaStringWithComments() throws Exception {
 		
@@ -399,18 +355,18 @@ public class TFIDFTest {
         assertEquals("this is a test comment", comment.getContent());
         
         TFIDF tester = new TFIDF();
-        ArrayList<String> returnString = tester.getWordsList(entry1);
-        ArrayList<String> testString = new ArrayList<>(); 
-        testString.add("orange");
-        testString.add("monkey");
-        testString.add("eagle");
-        testString.add("this");
-        testString.add("is");
-        testString.add("a");
-        testString.add("test");
-        testString.add("string");
+        ArrayList<String> returnList = tester.getWordsList(entry1);
+        ArrayList<String> testList = new ArrayList<>(); 
+        testList.add("orange");
+        testList.add("monkey");
+        testList.add("eagle");
+        testList.add("this");
+        testList.add("is");
+        testList.add("a");
+        testList.add("test");
+        testList.add("string");
 
-        assertEquals(returnString,testString);
+        assertEquals(returnList,testList);
         
         // delete a weblog entry
         mgr1.removeWeblogEntry(entry1);
