@@ -184,7 +184,7 @@ java.util.*" %>
 			        .popup .popupCanvas {
 			            visibility: hidden;
 			            width: 300px;
-			            height: 500px;
+			            height: 375px;
 			            background-color: #555;
 			            color: #fff;
 			            text-align: center;
@@ -328,7 +328,7 @@ java.util.*" %>
 				                li.style.listStyle = "none";
 				                li.style.borderLeft = "20px solid "+this.colors[barIndex%this.colors.length];
 				                li.style.padding = "5px";
-				                li.textContent = categ;
+				                li.textContent = categ + " " + this.options.data[categ];
 				                ul.append(li);
 				                barIndex++;
 				            }
@@ -344,7 +344,7 @@ java.util.*" %>
 				            gridScale:5,
 				            gridColor:"#eeeeee",
 				            data:exampleTags,
-				            colors:["#a55ca5","#67b6c7", "#bccd7a","#eb9743"]
+				            colors:["#a55ca5","#67b6c7", "#bccd7a"]
 				        }
 				    );
 				
