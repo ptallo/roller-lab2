@@ -81,8 +81,8 @@ public class WeblogEntryTest extends TestCase {
             testWeblog = TestUtils.setupWeblog("entryTestWeblog", testUser);
             TestUtils.endSession(true);
 
-            //WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
-            //assertEquals(1, wmgr.getWeblogCount());
+            WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
+            assertEquals(1, wmgr.getWeblogCount());
  
         } catch (Exception ex) {
             log.error("ERROR in test setup", ex);

@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import junit.framework.TestSuite;
+
 import org.apache.roller.weblogger.TestUtils;
 import org.apache.roller.weblogger.business.*;
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.strategy.TFIDF;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment.ApprovalStatus;
 
-
 public class TFIDFTest {
 	
     public static Log log = LogFactory.getLog(WeblogEntryTest.class);
@@ -29,43 +31,46 @@ public class TFIDFTest {
     User testUser = null;
     Weblog testWeblog = null;
     
-
 	@Before
 	public void setUp() throws Exception {
-		// setup weblogger
-//        TestUtils.setupWeblogger();
+        // setup weblogger
+        TestUtils.setupWeblogger();
+        
+       // assertEquals(0L, WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
 
-//       assertEquals(0L, WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
+        try {
+            testUser = TestUtils.setupUser("entryTestUser");
+            testWeblog = TestUtils.setupWeblog("entryTestWeblog", testUser);
+            TestUtils.endSession(true);
 
-//        try {
-//            testUser = TestUtils.setupUser("entryTestUser");
-//            testWeblog = TestUtils.setupWeblog("entryTestWeblog", testUser);
-//            TestUtils.endSession(true);
-
-//        } catch (Exception ex) {
-//            log.error("ERROR in test setup", ex);
-//            throw new Exception("Test setup failed", ex);
-//        }
+            //WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
+            //assertEquals(1, wmgr.getWeblogCount());
+ 
+        } catch (Exception ex) {
+            log.error("ERROR in test setup", ex);
+            throw new Exception("Test setup failed", ex);
+        }
     }
 
 
 	@After
 	public void tearDown() throws Exception {
 
- //       try {
- //           TestUtils.teardownWeblog(testWeblog.getId());
- //           TestUtils.teardownUser(testUser.getUserName());
- //           TestUtils.endSession(true);
- //       } catch (Exception ex) {
- //           log.error("ERROR in test teardown", ex);
- //           throw new Exception("Test teardown failed", ex);
- //       }
+        try {
+            TestUtils.teardownWeblog(testWeblog.getId());
+            TestUtils.teardownUser(testUser.getUserName());
+            TestUtils.endSession(true);
+        } catch (Exception ex) {
+            log.error("ERROR in test teardown", ex);
+            throw new Exception("Test teardown failed", ex);
+        }
 //
 	}
 
 	
 	@Test
 	public void testWordFound() throws Exception {
+		//Tests if there is word in the current entry found in the previous entry
 		
 		// Entry 1
 		
@@ -118,21 +123,17 @@ public class TFIDFTest {
         double idfActualVaue = idfMap.get("eagle");
         double bs = 2;
         assertTrue(idfActualVaue == bs);
-
-        // delete a weblog entry
-        mgr2.removeWeblogEntry(entry2);
-        TestUtils.endSession(true);
-        mgr1.removeWeblogEntry(entry1);
-        TestUtils.endSession(true);
 	}
 	
 	@Test
 	public void testWordNotFound() throws Exception {
+		//check and see if there an entry with words in any other entry
 			
 		// Entry 1
 		
-		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
-	    WeblogEntry entry1;
+        WeblogEntryManager mgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
+        WeblogEntry entry;
+		
 	    WeblogEntry testEntry1 = new WeblogEntry();
         
 	    testEntry1.setTitle("entryTestEntry1");
@@ -142,6 +143,30 @@ public class TFIDFTest {
         testEntry1.setPubTime(new java.sql.Timestamp(new java.util.Date().getTime()));
         testEntry1.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
         testEntry1.setWebsite(testWeblog);
+        testEntry1.setCreatorUserName(testUser.getUserName());
+
+        WeblogCategory cat = testWeblog.getWeblogCategory("General");
+        testEntry1.setCategory(cat);
+        
+        // create a weblog entry
+        mgr.saveWeblogEntry(testEntry1);
+        String id = testEntry1.getId();
+        TestUtils.endSession(true);
+        
+        // make sure entry was created
+        entry = mgr.getWeblogEntry(id);
+        assertNotNull(entry);
+        assertEquals(testEntry1, entry);
+        
+        // update a weblog entry
+        entry.setTitle("testtest");
+        mgr.saveWeblogEntry(entry);
+        TestUtils.endSession(true);
+        
+        // make sure entry was updated
+        entry = mgr.getWeblogEntry(id);
+        assertNotNull(entry);
+        assertEquals("testtest", entry.getTitle());
        
         // Test TF with first entry     
         ArrayList<WeblogEntry> entryList = new ArrayList<WeblogEntry>();
@@ -152,6 +177,14 @@ public class TFIDFTest {
         //int idfVaue = toDo
         assertNotNull(idfMap);        
         assertNull(idfMap.get("owl"));
+        
+        // delete a weblog entry
+        mgr.removeWeblogEntry(entry);
+        TestUtils.endSession(true);
+        
+        // make sure entry was deleted
+        entry = mgr.getWeblogEntry(id);
+        assertNull(entry);
 	}
 		
 	@Test

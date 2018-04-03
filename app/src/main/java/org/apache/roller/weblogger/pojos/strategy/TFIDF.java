@@ -69,12 +69,12 @@ public class TFIDF implements Strategy{
 		for (String word : words){
 			if (!termFrequency.keySet().contains(word)){
 				termFrequency.put(word, 1.0);
-				totalWords += 1;
 			} else {
 				Double frequency = termFrequency.get(word);
 				frequency += 1;
 				termFrequency.put(word, frequency);
 			}
+			totalWords += 1;
 		}
 		for (String word : termFrequency.keySet()){
 			Double frequency = termFrequency.get(word);
@@ -117,9 +117,12 @@ public class TFIDF implements Strategy{
 	public String getMetaString(WeblogEntry entry){
 		String metaString = "";
 		metaString += entry.getText();
-		//for (WeblogEntryComment comment : entry.getComments()){
-		//	metaString += (" " + comment.getContent()); 
-		//}
+		try{
+			for (WeblogEntryComment comment : entry.getComments()){
+				metaString += (" " + comment.getContent()); 
+			}
+		} catch (IllegalStateException err) {
+		}
 		return metaString;
 	}
 
