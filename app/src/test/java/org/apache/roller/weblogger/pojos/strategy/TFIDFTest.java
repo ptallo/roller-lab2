@@ -50,11 +50,27 @@ public class TFIDFTest {
 		// setup weblogger
         TestUtils.setupWeblogger();
 
-       assertEquals(0L, WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
-
         try {
             testUser = TestUtils.setupUser("entryTestUser");
             testWeblog = TestUtils.setupWeblog("entryTestWeblog", testUser);
+
+            assertEquals(0L, WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
+
+            WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
+            WeblogEntry entry1;
+
+            WeblogEntry testEntry1 = new WeblogEntry();
+            testEntry1.setTitle("entryTestEntry1");
+            testEntry1.setLink("testEntryLink1");
+            testEntry1.setAnchor("testEntryAnchor1");
+            testEntry1.setPubTime(new java.sql.Timestamp(new java.util.Date().getTime()));
+            testEntry1.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
+            testEntry1.setWebsite(testWeblog);
+            testEntry1.setCreatorUserName(testUser.getUserName());
+
+            WeblogCategory cat1 = testWeblog.getWeblogCategory("General");
+            testEntry1.setCategory(cat1);
+
             TestUtils.endSession(true);
 
         } catch (Exception ex) {
@@ -70,6 +86,8 @@ public class TFIDFTest {
         try {
             TestUtils.teardownWeblog(testWeblog.getId());
             TestUtils.teardownUser(testUser.getUserName());
+            mgr1.removeWeblogEntry(entry1);
+            TestUtils.endSession(true);
             TestUtils.endSession(true);
         } catch (Exception ex) {
             log.error("ERROR in test teardown", ex);
@@ -81,35 +99,6 @@ public class TFIDFTest {
 	
 	@Test
 	public void testWordFound() throws Exception {
-		
-		// Entry 1
-		
-		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
-        WeblogEntry entry1;
-
-        WeblogEntry testEntry1 = new WeblogEntry();
-        testEntry1.setTitle("entryTestEntry1");
-        testEntry1.setLink("testEntryLink1");
-        testEntry1.setText("orange moneky eagle");
-        testEntry1.setAnchor("testEntryAnchor1");
-        testEntry1.setPubTime(new java.sql.Timestamp(new java.util.Date().getTime()));
-        testEntry1.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
-        testEntry1.setWebsite(testWeblog);
-        testEntry1.setCreatorUserName(testUser.getUserName());
-
-        WeblogCategory cat1 = testWeblog.getWeblogCategory("General");
-        testEntry1.setCategory(cat1);
-
-        // create a weblog entry
-        mgr1.saveWeblogEntry(testEntry1);
-        String id1 = testEntry1.getId();
-        TestUtils.endSession(true);
-
-        // make sure entry was created
-        entry1 = mgr1.getWeblogEntry(id1);
-        assertNotNull(entry1);
-        assertEquals(testEntry1, entry1);
-        
         // Entry 2
 		WeblogEntryManager mgr2 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
         WeblogEntry entry2 = new WeblogEntry();
@@ -153,15 +142,13 @@ public class TFIDFTest {
         // delete a weblog entry
         mgr2.removeWeblogEntry(entry2);
         TestUtils.endSession(true);
-        mgr1.removeWeblogEntry(entry1);
-        TestUtils.endSession(true);
+
 	}
 	
 	@Test
 	public void testWordNotFound() throws Exception {
 			
 		// Entry 1
-		
 		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
 	    WeblogEntry entry1;
 	    WeblogEntry testEntry1 = new WeblogEntry();
