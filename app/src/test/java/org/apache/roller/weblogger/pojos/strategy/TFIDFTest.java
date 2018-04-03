@@ -86,8 +86,6 @@ public class TFIDFTest {
         try {
             TestUtils.teardownWeblog(testWeblog.getId());
             TestUtils.teardownUser(testUser.getUserName());
-            mgr1.removeWeblogEntry(entry1);
-            TestUtils.endSession(true);
             TestUtils.endSession(true);
         } catch (Exception ex) {
             log.error("ERROR in test teardown", ex);
