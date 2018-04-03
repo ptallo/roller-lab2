@@ -117,9 +117,9 @@ public class TFIDF implements Strategy{
 	public String getMetaString(WeblogEntry entry){
 		String metaString = "";
 		metaString += entry.getText();
-		for (WeblogEntryComment comment : entry.getComments()){
-			metaString += (" " + comment.getContent()); 
-		}
+		//for (WeblogEntryComment comment : entry.getComments()){
+		//	metaString += (" " + comment.getContent()); 
+		//}
 		return metaString;
 	}
 
