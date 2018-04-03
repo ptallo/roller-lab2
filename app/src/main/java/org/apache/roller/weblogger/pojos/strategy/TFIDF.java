@@ -16,6 +16,8 @@ public class TFIDF implements Strategy{
 		}
 	}
 	
+	//Input : a list of entry's and a specific weblog entry
+	//Output : a hashmap containing the top 3 tfidf word to value pair
 	@Override
 	public HashMap<String, Double> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry) {
 		HashMap<String, Double> tfMap = calculateTF(entry);
@@ -147,6 +149,8 @@ public class TFIDF implements Strategy{
 		return removeStopWords(wordsList);
 	}
 	
+	//Input : a list of words
+	//Output : returns a list of words without stop words based on the stopWords private variable
 	public ArrayList<String> removeStopWords(ArrayList<String> wordsList){
 		ArrayList<String> temp = new ArrayList<>();
 		for(String word : wordsList){
