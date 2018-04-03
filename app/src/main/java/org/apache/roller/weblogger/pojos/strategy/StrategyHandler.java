@@ -1,58 +1,52 @@
 package org.apache.roller.weblogger.pojos.strategy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.sql.*;
 
+import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 
 public class StrategyHandler {
-	public static HashMap<WeblogEntry, ArrayList<String>> entryToTagMap; 
-	private static Strategy strategy1;
+	private ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();;
+	private WeblogEntry myEntry;
 	
-	public StrategyHandler(){
+	public StrategyHandler(String beanid) throws Exception{
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:4306/rollerdb", "eece3093student", "eece3093");
+
+		Statement getWeblogId = conn.createStatement();
+		ResultSet set1 = getWeblogId.executeQuery(
+				String.format("SELECT websiteid FROM WeblogEntry WHERE id = '%s'", beanid)
+		);
 		
-	}
-	
-	public static ArrayList<String> getRecommendedTags(WeblogEntry entry){
-		return entryToTagMap.get(entry);
-	}
-	
-	public static void initiateStrategyHandler(Strategy strategy, ArrayList<WeblogEntry> entries){
-		strategy1 = strategy;
-		entryToTagMap = new HashMap<WeblogEntry, ArrayList<String>>();
-		for (WeblogEntry entry : entries){
-			addWeblogEntry(entry, false);
+		set1.next();
+		String weblogid = set1.getString("websiteid");
+		
+		Statement getEntries = conn.createStatement();
+		ResultSet set = getEntries.executeQuery(
+				String.format("SELECT weblogentry.id, websiteid FROM weblogentry "
+				+ "JOIN weblog WHERE weblog.id = weblogentry.websiteid "
+				+ "AND weblogentry.websiteid = '%s';", weblogid)
+		);
+		
+		ArrayList<String> weblogEntryIds = new ArrayList<>();
+		while(set.next()){
+			String id = set.getString("id");
+			weblogEntryIds.add(id);
 		}
-		runWeblogStartup();
+		
+		WeblogEntryManager manager = WebloggerFactory.getWeblogger().getWeblogEntryManager();
+		
+		myEntry = manager.getWeblogEntry(beanid);
+		
+		for (String id : weblogEntryIds){
+			WeblogEntry entry = manager.getWeblogEntry(id);
+			weblogEntries.add(entry);
+		}	
 	}
-	
-	public static void runWeblogStartup(){
-		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
-		weblogEntries.addAll(entryToTagMap.keySet());
-		for (WeblogEntry entry : weblogEntries) {
-			ArrayList<String> tags = entryToTagMap.get(entry);
-			tags = runStrategy(weblogEntries, entry);
-		}
-	}
-	
-	public static void addWeblogEntry(WeblogEntry entry, Boolean runStrategy){
-		//WeblogEntry entry is the entry that you wish to add
-		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
-		weblogEntries.addAll(entryToTagMap.keySet());
-		if (runStrategy){
-			entryToTagMap.put(entry, runStrategy(weblogEntries, entry));
-		}
-	}
-	
-	public static void addComment(WeblogEntry entry){
-		//WeblogEntry entry should be the weblogEntry which the comment was added to
-		ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();
-		weblogEntries.addAll(entryToTagMap.keySet());
-		ArrayList<String> recommendedTags = entryToTagMap.get(entry);
-		recommendedTags = runStrategy(weblogEntries, entry);
-	}
-	
-	private static ArrayList<String> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
-		return strategy1.runStrategy(entryList, entry);
+
+	public HashMap<String, Double> runStrategy(Strategy strategy){
+		return strategy.runStrategy(weblogEntries, myEntry);
 	}
 }
