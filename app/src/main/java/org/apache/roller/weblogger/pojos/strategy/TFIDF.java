@@ -57,10 +57,10 @@ public class TFIDF implements Strategy{
 	
 		return recomendedTags;
 	}
-	
+
+	//Input : a weblog entry
+	//Output : a hashmap of each word in the entry to its tf value
 	public HashMap<String, Double> calculateTF(WeblogEntry entry){
-		//Input : a weblog entry
-		//Output : a hashmap of each word in the entry to its tf value
 		HashMap<String, Double> termFrequency = new HashMap<String, Double>();
 		ArrayList<String> words = getWordsList(entry);
 		Integer totalWords = 0;
@@ -81,10 +81,10 @@ public class TFIDF implements Strategy{
 		}
 		return termFrequency;
 	}
-	
+
+	//Input : a list of weblogEntries, and a singular weblog entry
+	//Output : a map of all the words in the 2nd argument to each words idf value
 	public HashMap<String, Double> calculateIDF(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
-		//Input : a list of weblogEntries, and a singular weblog entry
-		//Output : a map of all the words in the 2nd argument to each words idf value
 		HashMap<String, Double> idfMap = new HashMap<String, Double>();
 		ArrayList<String> wordsInDocument = getNonRepeatingWordsList(entry);
 		for (String word : wordsInDocument){
@@ -109,10 +109,10 @@ public class TFIDF implements Strategy{
 		
 		return idfMap;
 	}
-	
+
+	//Input : a weblog entry
+	//Output : the string collection of all the weblog's text as well as its comments text
 	public String getMetaString(WeblogEntry entry){
-		//Input : a weblog entry 
-		//Output : the string collection of all the weblog's text as well as its comments text
 		String metaString = "";
 		metaString += entry.getText();
 		for (WeblogEntryComment comment : entry.getComments()){
@@ -120,10 +120,10 @@ public class TFIDF implements Strategy{
 		}
 		return metaString;
 	}
-	
+
+	//Input : a weblog entry
+	//Output : returns an ArrayList of words that are in the entry
 	public ArrayList<String> getWordsList(WeblogEntry entry){
-		//Input : a weblog entry
-		//Output : returns an ArrayList of words that are in the entry
 		String metaString = getMetaString(entry);
 		String[] splitMetaString = metaString.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 		ArrayList<String> wordsList = new ArrayList<>();
@@ -132,10 +132,10 @@ public class TFIDF implements Strategy{
 		}
 		return removeStopWords(wordsList);
 	}
-	
+
+	//Input : a weblog entry
+	//Output : returns an ArrayList of non repeating words that are in the entry
 	public ArrayList<String> getNonRepeatingWordsList(WeblogEntry entry){
-		//Input : a weblog entry
-		//Output : returns an ArrayList of non repeating words that are in the entry 
 		String metaString = getMetaString(entry);
 		String[] splitMetaString = metaString.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 		ArrayList<String> wordsList = new ArrayList<>();
