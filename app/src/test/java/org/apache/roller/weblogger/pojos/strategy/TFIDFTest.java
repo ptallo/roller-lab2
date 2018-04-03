@@ -293,7 +293,7 @@ public class TFIDFTest {
 	}
 	
 	@Test
-	public void testGetWordsWithComments() throws Exception {
+	public void testGetWordsListWithComments() throws Exception {
 		
 		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
         WeblogEntry entry1;
@@ -351,7 +351,7 @@ public class TFIDFTest {
         testList.add("is");
         testList.add("a");
         testList.add("test");
-        testList.add("string");
+        testList.add("comment");
 
         assertEquals(returnList,testList);
         
@@ -364,4 +364,79 @@ public class TFIDFTest {
         assertNull(entry1);
 	}
 	
+	@Test
+	public void testRemoveStopWords() throws Exception {     
+        
+        TFIDF tester = new TFIDF();
+        ArrayList<String> testList = new ArrayList<>();
+        ArrayList<String> expectedList = new ArrayList<>();
+        ArrayList<String> returnedList = new ArrayList<>();
+        testList.add("because");
+        testList.add("the");
+        testList.add("banana");     
+
+        expectedList.add("banana");
+        
+        returnedList = tester.removeStopWords(testList);
+        
+        assertEquals(returnedList,expectedList);
+	}
+	
+	@Test
+	public void testgetNonRepeatingWordsList() throws Exception {     
+        
+		WeblogEntryManager mgr1 = WebloggerFactory.getWeblogger().getWeblogEntryManager();
+        WeblogEntry entry1;
+
+        WeblogEntry testEntry1 = new WeblogEntry();
+        testEntry1.setTitle("entryTestEntry1");
+        testEntry1.setLink("testEntryLink1");
+        testEntry1.setText("because the banana flavored banana");
+        testEntry1.setAnchor("testEntryAnchor1");
+        testEntry1.setPubTime(new java.sql.Timestamp(new java.util.Date().getTime()));
+        testEntry1.setUpdateTime(new java.sql.Timestamp(new java.util.Date().getTime()));
+        testEntry1.setWebsite(testWeblog);
+        testEntry1.setCreatorUserName(testUser.getUserName());
+
+        WeblogCategory cat1 = testWeblog.getWeblogCategory("General");
+        testEntry1.setCategory(cat1);
+
+        // create a weblog entry
+        mgr1.saveWeblogEntry(testEntry1);
+        String id1 = testEntry1.getId();
+        TestUtils.endSession(true);
+
+        // make sure entry was created
+        entry1 = mgr1.getWeblogEntry(id1);
+        assertNotNull(entry1);
+        assertEquals(testEntry1, entry1);
+        
+        
+        TFIDF tester = new TFIDF();
+        
+        ArrayList<String> expectedList = new ArrayList<>();
+        ArrayList<String> returnedList = new ArrayList<>();
+        expectedList.add("banana");
+        expectedList.add("because");
+        expectedList.add("the");
+        expectedList.add("banana");   
+        expectedList.add("flavored");  
+        
+        returnedList = tester.getNonRepeatingWordsList(entry1);
+        
+        assertEquals(returnedList,expectedList);
+        
+        // delete a weblog entry
+        mgr1.removeWeblogEntry(entry1);
+        TestUtils.endSession(true);
+        
+        // make sure entry was deleted
+        entry1 = mgr1.getWeblogEntry(id1);
+        assertNull(entry1);
+	}
 }
+	
+	
+}
+
+
