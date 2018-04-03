@@ -7,45 +7,71 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 
 public class TFIDF implements Strategy{
+	private String[] stopWords = {"can", "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from", "further", "had", "has", "have", "having", "he", "hed", "hell", "hes", "her", "here", "heres", "hers", "herself", "him", "himself", "his", "how", "hows", "i", "id", "ill", "im", "ive", "if", "in", "into", "is", "it", "its", "its", "itself", "lets", "me", "more", "most", "my", "myself", "nor", "of", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "she", "shed", "shell", "shes", "should", "so", "some", "such", "than", "that", "thats", "the", "their", "theirs", "them", "themselves", "then", "there", "theres", "these", "they", "theyd", "theyll", "theyre", "theyve", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "we", "wed", "well", "were", "weve", "were", "what", "whats", "when", "whens", "where", "wheres", "which", "while", "who", "whos", "whom", "why", "whys", "with", "would", "you", "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves" };
+	private ArrayList<String> stopWordsArrayList = new ArrayList<>();
 	
 	public TFIDF(){
-		
+		for(String word : stopWords){
+			stopWordsArrayList.add(word);
+		}
 	}
-
+	
 	@Override
-	public ArrayList<String> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry) {
-		HashMap<String, Double> tfMap = calculateTF(entry); //a map to each word to how many times that occurs
-		HashMap<String, Double> idfMap = calculateIDF(entryList, entry); //calculates the idf value for each word in the map
+	public HashMap<String, Double> runStrategy(ArrayList<WeblogEntry> entryList, WeblogEntry entry) {
+		HashMap<String, Double> tfMap = calculateTF(entry);
+		HashMap<String, Double> idfMap = calculateIDF(entryList, entry); 
 		HashMap<String, Double> tfidfMap = new HashMap<String, Double>();
 		for (String word : tfMap.keySet()){
 			Double tfidf = tfMap.get(word) * idfMap.get(word);
 			tfidfMap.put(word, tfidf);
 		}
-		ArrayList<String> words = new ArrayList<String>();
-		words.addAll(tfidfMap.keySet());
-		ArrayList<Double> ratings = new ArrayList<Double>();
-		ratings.addAll(tfidfMap.values());
-				
-		ArrayList<String> tags = new ArrayList<>();
-		while(tags.size() < 3 && words.size() != 0){
-			tags.add(removeMax(words, ratings)); //gets the word with the highest rating
+		
+		HashMap<String, Double> recomendedTags = new HashMap<String, Double>();
+		
+		String maxWord = "", secondMaxWord = "", thirdMaxWord = "";
+		Double max = 0.0, secondMax = 0.0, thirdMax = 0.0;
+		
+		for (String word : tfidfMap.keySet()){
+			Double value = tfidfMap.get(word);
+			if(value > max){
+				thirdMaxWord = secondMaxWord;
+				thirdMax = secondMax;
+				secondMaxWord = maxWord;
+				secondMax = max;
+				max = value;
+				maxWord = word;
+			}else if (value > secondMax){
+				thirdMaxWord = secondMaxWord;
+				thirdMax = secondMax;
+				secondMaxWord = word;
+				secondMax = value;
+			}else if (value > thirdMax){
+				thirdMaxWord = word;
+				thirdMax = value;
+			}
 		}
-		return tags;
+		
+		recomendedTags.put(thirdMaxWord, thirdMax);
+		recomendedTags.put(secondMaxWord, secondMax);
+		recomendedTags.put(maxWord, max);
+	
+		return recomendedTags;
 	}
 	
 	public HashMap<String, Double> calculateTF(WeblogEntry entry){
+		//Input : a weblog entry
+		//Output : a hashmap of each word in the entry to its tf value
 		HashMap<String, Double> termFrequency = new HashMap<String, Double>();
-		String metaString = getMetaString(entry);
-		String[] words = metaString.split("\\s+");
+		ArrayList<String> words = getWordsList(entry);
 		Integer totalWords = 0;
 		for (String word : words){
 			if (!termFrequency.keySet().contains(word)){
-				termFrequency.put(word, (double) 1);
+				termFrequency.put(word, 1.0);
+				totalWords += 1;
 			} else {
 				Double frequency = termFrequency.get(word);
 				frequency += 1;
 				termFrequency.put(word, frequency);
-				totalWords += 1;
 			}
 		}
 		for (String word : termFrequency.keySet()){
@@ -57,35 +83,36 @@ public class TFIDF implements Strategy{
 	}
 	
 	public HashMap<String, Double> calculateIDF(ArrayList<WeblogEntry> entryList, WeblogEntry entry){
-		HashMap<WeblogEntry, ArrayList<String>> wordsInEntryMap = new HashMap<WeblogEntry, ArrayList<String>>();
-		for (WeblogEntry entryInList : entryList){
-			wordsInEntryMap.put(entryInList, getWordsList(entryInList));
-		}
+		//Input : a list of weblogEntries, and a singular weblog entry
+		//Output : a map of all the words in the 2nd argument to each words idf value
 		HashMap<String, Double> idfMap = new HashMap<String, Double>();
-		ArrayList<String> words = wordsInEntryMap.get(entry);
-		for(String word : words){
-			for (WeblogEntry entryInList : entryList) {
-				ArrayList<String> wordsInList = wordsInEntryMap.get(entryInList);
-				if (wordsInList.contains(word)){
-					if (!idfMap.keySet().contains(word)){
-						idfMap.put(word, (double) 1);
-					} else {
-						Double frequency = idfMap.get(word);
-						frequency += 1;
-						idfMap.put(word, frequency);
-					}
+		ArrayList<String> wordsInDocument = getNonRepeatingWordsList(entry);
+		for (String word : wordsInDocument){
+			idfMap.put(word, 0.0);
+		}
+		
+		for(WeblogEntry entryInList : entryList){
+			ArrayList<String> wordsInEntryInList = getNonRepeatingWordsList(entryInList);
+			for (String word : wordsInEntryInList){
+				if (idfMap.containsKey(word)){
+					Double documentFrequency = idfMap.get(word);
+					documentFrequency += 1;
+					idfMap.put(word, documentFrequency);
 				}
 			}
 		}
-		for (String word : idfMap.keySet()){
-			Double idf = idfMap.get(word);
-			idf = Math.log(entryList.size() / idf);
-			idfMap.put(word, idf);
+		
+		for(String word : idfMap.keySet()){
+			Double documentFrequency = idfMap.get(word);
+			idfMap.put(word, Math.log(entryList.size() / documentFrequency));
 		}
+		
 		return idfMap;
 	}
 	
-	private String getMetaString(WeblogEntry entry){
+	public String getMetaString(WeblogEntry entry){
+		//Input : a weblog entry 
+		//Output : the string collection of all the weblog's text as well as its comments text
 		String metaString = "";
 		metaString += entry.getText();
 		for (WeblogEntryComment comment : entry.getComments()){
@@ -94,32 +121,39 @@ public class TFIDF implements Strategy{
 		return metaString;
 	}
 	
-	private ArrayList<String> getWordsList(WeblogEntry entry){
-		//returns list of all words in document
+	public ArrayList<String> getWordsList(WeblogEntry entry){
+		//Input : a weblog entry
+		//Output : returns an ArrayList of words that are in the entry
 		String metaString = getMetaString(entry);
-		String[] splitMetaString = metaString.split("\\s+");
+		String[] splitMetaString = metaString.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 		ArrayList<String> wordsList = new ArrayList<>();
 		for (String word : splitMetaString){
-			if (!wordsList.contains(word)) {
+			wordsList.add(word);
+		}
+		return removeStopWords(wordsList);
+	}
+	
+	public ArrayList<String> getNonRepeatingWordsList(WeblogEntry entry){
+		//Input : a weblog entry
+		//Output : returns an ArrayList of non repeating words that are in the entry 
+		String metaString = getMetaString(entry);
+		String[] splitMetaString = metaString.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+		ArrayList<String> wordsList = new ArrayList<>();
+		for (String word : splitMetaString){
+			if(!wordsList.contains(word)){
 				wordsList.add(word);
 			}
 		}
-		return wordsList;
+		return removeStopWords(wordsList);
 	}
 	
-	private String removeMax(ArrayList<String> words, ArrayList<Double> ratings){
-		Integer index = 0;
-		Double max = (double) 0;
-		for (int i = 0; i < ratings.size(); i++){
-			if (ratings.get(i) > max){
-				max = ratings.get(i);
-				index = i;
+	public ArrayList<String> removeStopWords(ArrayList<String> wordsList){
+		ArrayList<String> temp = new ArrayList<>();
+		for(String word : wordsList){
+			if(!stopWordsArrayList.contains(word)){
+				temp.add(word);
 			}
 		}
-		String word = words.get(index);
-		words.remove(index);
-		ratings.remove(index);
-		return word;
+		return temp;
 	}
-
 }

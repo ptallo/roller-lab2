@@ -17,14 +17,9 @@
 --%>
 <%@ include file="/WEB-INF/jsps/taglibs-struts2.jsp" %>
 
-<%@ page import="import java.util.ArrayList, 
-org.apache.roller.weblogger.business.jpa.JPAWeblogEntryManagerImpl, 
-org.apache.roller.weblogger.business.WeblogEntryManager, 
-org.apache.roller.weblogger.pojos.TFIDF,
-org.apache.roller.weblogger.pojos.WeblogEntrySearchCriteria,
-org.apache.roller.weblogger.pojos.StrategyHandler,
-org.apache.roller.weblogger.business.WebloggerFactory,
-org.apache.roller.weblogger.pojos.WeblogEntry" %>
+<%@ page import="org.apache.roller.weblogger.pojos.strategy.StrategyHandler,
+org.apache.roller.weblogger.pojos.strategy.TFIDF,
+java.util.*" %>
 
 <link rel="stylesheet" media="all" href='<s:url value="/roller-ui/jquery-ui-1.11.0/jquery-ui.min.css"/>' />
 
@@ -61,24 +56,6 @@ org.apache.roller.weblogger.pojos.WeblogEntry" %>
     <s:if test="actionName == 'entryEdit'">
         <s:hidden name="bean.id" />  <!-- this is the id of the current Weblog -->
     </s:if>
-    <%
-    	WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
-    	WeblogEntrySearchCriteria criteria = new WeblogEntrySearchCriteria();
-    	criteria.setWeblog(weblog);
-    	TFIDF strategy = new TFIDF();
-    	
-    	List<WeblogEntry> entries = wmgr.getWeblogEntries(criteria);
-    	ArrayList<WeblogEntry> aEntries = new ArrayList<WeblogEntry>();
-    	aEntries.addAll(entries);
-    	
-    	StrategyHandler.initiateStrategyHandler(strategy, aEntries);
-    	ArrayList<String> tagList = new ArrayList<String>();
-    	tagList = StrategyHandler.getRecommendedTags();
-    	
-    	String tag1 = tagList.get(0);
-    	String tag2 = tagList.get(1);
-    	String tag3 = tagList.get(2);
-    %>
 
     <%-- ================================================================== --%>
     <%-- Title, category, dates and other metadata --%>
@@ -169,15 +146,30 @@ org.apache.roller.weblogger.pojos.WeblogEntry" %>
             </td>
         </tr>
         
-        <tr>
-        	<td class="entryEditFormLabel">
-        		<label for="title"><s:text name="weblogEdit.genTags"/></label>
-        	</td>
-        	<td><%=tag1%></td>
-        	<td><%=tag2%></td>
-        	<td><%=tag3%></td>
-        	<td id="infographic">
-        		<!-- Popup Code -->
+        <s:if test="actionName == 'entryEdit'">
+         	<%
+		    	StrategyHandler handler = new StrategyHandler(request.getParameter("bean.id"));
+		    	TFIDF strategy = new TFIDF();
+		    	HashMap<String, Double> tags = handler.runStrategy(strategy);
+		    	ArrayList<String> recomendedTags = new ArrayList<String>();
+		    	for(String word : tags.keySet()){
+		    		recomendedTags.add(word);
+		    	}
+		    	
+		    	String tag1 = recomendedTags.get(0);
+		    	Double tag1Val = tags.get(tag1);
+		    	String tag2 = recomendedTags.get(1);
+		    	Double tag2Val = tags.get(tag2);
+		    	String tag3 = recomendedTags.get(2);
+		    	Double tag3Val = tags.get(tag3);
+		    %>
+	       <tr>
+	       	<td class="entryEditFormLabel">
+	       		<label for="title"><s:text name="weblogEdit.genTags"/></label>
+	       	</td>
+	       	<td><%=tag1%> <%=tag2%> <%=tag3%></td>
+	       	<td id="infographic">
+	       		<!-- Popup Code -->
 				<style>
 			        .popup {
 			            position: relative;
@@ -243,11 +235,11 @@ org.apache.roller.weblogger.pojos.WeblogEntry" %>
 				    var ctx = tagCanvas.getContext("2d");
 				
 				    var exampleTags = {
-				        "Apples": 10,
-				        "Pies": 14,
-				        "Pans": 2,
-				        "Oven": 12
+				    	<%=tag1%> : <%=tag1Val%>,
+				    	<%=tag2%> : <%=tag2Val%>,
+				    	<%=tag3%> : <%=tag3Val%>
 				    };
+				    
 				
 				    function drawLine(ctx, startX, startY, endX, endY,color){
 				        ctx.save();
@@ -358,8 +350,9 @@ org.apache.roller.weblogger.pojos.WeblogEntry" %>
 				
 				    myBarchart.draw();
 				</script>
-        	</td>
-        </tr>
+	       	</td>
+	       </tr>
+        </s:if>
 
         <s:if test="actionWeblog.enableMultiLang">
                 <tr> 
