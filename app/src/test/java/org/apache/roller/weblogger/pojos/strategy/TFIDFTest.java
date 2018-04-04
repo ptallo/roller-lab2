@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.junit.Test;
 
-public class TFIDFTest2 {
+public class TFIDFTest {
 
 	@Test
 	public void testTF() {
