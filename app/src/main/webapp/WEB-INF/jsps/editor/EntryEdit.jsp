@@ -167,7 +167,25 @@ java.util.*" %>
 	       	<td class="entryEditFormLabel">
 	       		<label for="title"><s:text name="weblogEdit.genTags"/></label>
 	       	</td>
-	       	<td><%=tag1%> <%=tag2%> <%=tag3%></td>
+	       	<td>
+			   <input type="checkbox" class="TagForm" value="<%=tag1%>"> <%=tag1%>
+			   <input type="checkbox" class="TagForm" value="<%=tag2%>"> <%=tag2%>
+			   <input type="checkbox" class="TagForm" value="<%=tag3%>"> <%=tag3%>
+			   <input type="button" onclick="addSelectedTags()" value="Add Selected Tags">
+	       	</td>
+	       	<script type="text/javascript">
+			   function addSelectedTags() {
+			       var coffee = $(".TagForm");
+			       var txt = " ";
+			       var i;
+			       for (i = 0; i < coffee.length; i++) {
+			           if (coffee[i].checked) {
+			               txt = txt + coffee[i].value + " ";
+			           }
+			       }
+			       document.getElementById("tagAutoComplete").value += txt;
+			   }
+	       	</script>
 	       	<td id="infographic">
 	       		<!-- Popup Code -->
 				<style>
