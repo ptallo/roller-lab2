@@ -72,7 +72,7 @@ public class TFIDF implements Strategy{
 			} else {
 				Double frequency = termFrequency.get(word);
 				frequency += 1;
-				termFrequency.put(word, frequency);
+				termFrequency.put(word, 0.0);
 			}
 			totalWords += 1;
 		}

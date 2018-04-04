@@ -19,6 +19,7 @@ public class TFIDFTest {
 		assertTrue(testMap.get("banana") == (2.0/7.0));
 		assertTrue(testMap.get("eagle") == (1.0/7.0));
 		assertTrue(testMap.get("flag") == (3.0/7.0));
+		assertNull(testMap.get("null"));
 	}
 	
 	@Test
@@ -43,6 +44,7 @@ public class TFIDFTest {
 		assertTrue(testMap.get("banana") == Math.log(3.0 / 3));
 		assertTrue(testMap.get("apple") == Math.log(3.0 / 2));
 		assertTrue(testMap.get("orange") == Math.log(3.0 / 1));
+		assertNull(testMap.get("null"));
 	}
 	
 	@Test
@@ -66,5 +68,6 @@ public class TFIDFTest {
 		assertTrue(returnedTags.get("orange") == (0.05792358687259491));
 		assertTrue(returnedTags.get("grape") == (0.15694461266687282));
 		assertTrue(returnedTags.get("cherrypie") == (0.15694461266687282));
-		}
+		assertNull(returnedTags.get("null"));
+	}
 }
