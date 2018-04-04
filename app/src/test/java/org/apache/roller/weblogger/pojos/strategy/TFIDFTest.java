@@ -9,6 +9,10 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.junit.Test;
 
 public class TFIDFTest {
+	//This is a Black Box Testing Boundry Based Testing Strategy
+	//All assertTrue statements are testing valid values of the functional requirements
+	//The assertNull statements test invalid values of the functional requirements 
+	//The combination of these two is what boundy based testing does.
 
 	@Test
 	public void testTF() {
