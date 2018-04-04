@@ -184,7 +184,7 @@ java.util.*" %>
 			        .popup .popupCanvas {
 			            visibility: hidden;
 			            width: 300px;
-			            height: 375px;
+			            height: 400px;
 			            background-color: #555;
 			            color: #fff;
 			            text-align: center;
@@ -328,6 +328,7 @@ java.util.*" %>
 				                li.style.listStyle = "none";
 				                li.style.borderLeft = "20px solid "+this.colors[barIndex%this.colors.length];
 				                li.style.padding = "5px";
+				                li.style.color = "white";
 				                li.textContent = categ + " " + this.options.data[categ];
 				                ul.append(li);
 				                barIndex++;
@@ -339,10 +340,10 @@ java.util.*" %>
 				    var myBarchart = new Barchart(
 				        {
 				            canvas:tagCanvas,
-				            seriesName:"tag data",
+				            seriesName:"TFIDF Values",
 				            padding:20,
-				            gridScale:5,
-				            gridColor:"#eeeeee",
+				            gridScale:0.02,
+				            gridColor:"White",
 				            data:exampleTags,
 				            colors:["#a55ca5","#67b6c7", "#bccd7a"]
 				        }
