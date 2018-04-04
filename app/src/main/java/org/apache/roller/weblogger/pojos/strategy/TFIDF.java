@@ -99,7 +99,7 @@ public class TFIDF implements Strategy{
 				if (idfMap.containsKey(word)){
 					Double documentFrequency = idfMap.get(word);
 					documentFrequency += 1;
-					idfMap.put(word, documentFrequency);
+					idfMap.put(word, documentFrequency);							
 				}
 			}
 		}
