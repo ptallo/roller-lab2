@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.roller.weblogger.pojos.WeblogEntry;
+/*
+    Description: Calculates the term frequency and returns the term frequency map.
+
+    Refactored: No need to be part of the inverse document frequency.
+ */
 
 class TermFrequency {
 	private StrategyUtility util = new StrategyUtility();

@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.roller.weblogger.pojos.WeblogEntry;
+/*
+    Description: Calculates the inverse document frequency and returns the inverse dataset map.
 
+    Refactored: No need to be part of the term frequency.
+ */
 public class InverseDocumentFrequency {
 	private StrategyUtility util = new StrategyUtility();
 	//Input : a list of weblogEntries, and a singular weblog entry
