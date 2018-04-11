@@ -1,5 +1,6 @@
 package org.apache.roller.weblogger.pojos.strategy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RecommendedTagHandler {

@@ -10,9 +10,7 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 public class StrategyHandler {
 	private ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();;
 	private WeblogEntry myEntry;
-	private DatabaseHandler dbHandler = new DatabaseHandler();
-	//String.format("SELECT websiteid FROM WeblogEntry WHERE id = '%s'", beanid)
-	
+	private DatabaseHandler dbHandler = new DatabaseHandler();	
 	
 	public StrategyHandler(String beanid) throws Exception{
 		ResultSet set1 = dbHandler.queryDatabase(String.format("SELECT websiteid FROM WeblogEntry WHERE id = '%s'", beanid));
