@@ -3,6 +3,8 @@ package org.apache.roller.weblogger.pojos.strategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//Description: takes a hashmap of words to their tfidf values and pull the top three to recommend tags
+//Refactoring: removed this from the TFIDF class in order to maintain the single responsibility principle
 public class RecommendedTagHandler {
 	public HashMap<String, Double> recommendTags(HashMap<String, Double> tfidfMap){
 		HashMap<String, Double> recomendedTags = new HashMap<String, Double>();

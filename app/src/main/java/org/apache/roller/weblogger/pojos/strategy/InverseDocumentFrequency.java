@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.roller.weblogger.pojos.WeblogEntry;
-/*
-    Description: Calculates the inverse document frequency and returns the inverse dataset map.
 
-    Refactored: No need to be part of the term frequency.
- */
+//Description: Calculates the inverse document frequency of the entry given the corpus being the entryList
+//Refactoring: Removed from the TFIDF Class to further separate the code due to the Single Responibility Principle so this class would be soley responsible for calculation the IDF
 public class InverseDocumentFrequency {
 	private StrategyUtility util = new StrategyUtility();
 	//Input : a list of weblogEntries, and a singular weblog entry

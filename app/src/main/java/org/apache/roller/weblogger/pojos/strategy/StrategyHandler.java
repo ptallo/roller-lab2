@@ -7,6 +7,8 @@ import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 
+//Description: takes a strategy object and constructs the data necessary to run a strategy object
+//Refactoring" Removed database handling to a separate document in order to preserve SRP
 public class StrategyHandler {
 	private ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();;
 	private WeblogEntry myEntry;

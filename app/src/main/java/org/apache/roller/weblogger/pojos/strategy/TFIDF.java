@@ -6,6 +6,8 @@ import java.util.HashMap;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 
+//Description: implementation of the strategy class responsible for calculating the TFIDF class
+//Refactoring: removed a lot of content from this class in order to maintain the further responsibility principle
 public class TFIDF implements Strategy{
 	private TermFrequency tf = new TermFrequency();
 	private InverseDocumentFrequency idf = new InverseDocumentFrequency();

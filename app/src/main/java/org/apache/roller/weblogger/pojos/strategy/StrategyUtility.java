@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 
+//Description: this class is responible for all auxillary functions related to strategy calculation
+//Refactoring: we separated this from the TFIDF class in order to maintain the single responsibility principle.
 public class StrategyUtility {
 	private StopWordsHandler stopWords = new StopWordsHandler();
 	
