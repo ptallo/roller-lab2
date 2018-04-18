@@ -7,31 +7,25 @@ import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 
+//Description: takes a strategy object and constructs the data necessary to run a strategy object
+//Refactoring" Removed database handling to a separate document in order to preserve SRP
 public class StrategyHandler {
 	private ArrayList<WeblogEntry> weblogEntries = new ArrayList<>();;
 	private WeblogEntry myEntry;
-	
+	private DatabaseHandler dbHandler = new DatabaseHandler();	
 	
 	public StrategyHandler(String beanid) throws Exception{
-		//Connects to the mysql database
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:4306/rollerdb", "eece3093student", "eece3093");
-
-		//executes a query to get the weblogid based on which weblog entry you are on
-		Statement getWeblogId = conn.createStatement();
-		ResultSet set1 = getWeblogId.executeQuery(
-				String.format("SELECT websiteid FROM WeblogEntry WHERE id = '%s'", beanid)
-		);
+		ResultSet set1 = dbHandler.queryDatabase(String.format("SELECT websiteid FROM WeblogEntry WHERE id = '%s'", beanid));
 		set1.next();
 		String weblogid = set1.getString("websiteid");
 		
 		//gets a list of weblog entry id's based on the website id retrieved above
-		Statement getEntries = conn.createStatement();
-		ResultSet set = getEntries.executeQuery(
+		ResultSet set = dbHandler.queryDatabase(
 				String.format("SELECT weblogentry.id, websiteid FROM weblogentry "
 				+ "JOIN weblog WHERE weblog.id = weblogentry.websiteid "
 				+ "AND weblogentry.websiteid = '%s';", weblogid)
 		);
+		
 		ArrayList<String> weblogEntryIds = new ArrayList<>();
 		while(set.next()){
 			String id = set.getString("id");
